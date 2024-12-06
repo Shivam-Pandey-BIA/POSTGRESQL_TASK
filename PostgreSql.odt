@@ -1,0 +1,421 @@
+Task 1:: Create one table: example → linkedin_data
+fields →lid,fullname, contact_no, education,  exp, designation, job_st_dt
+
+1.	Find max exp of lid.
+2.	Get record between 2020 & 2021
+3.	Find lid, fullname,  whose name ends and  starts with ‘a’
+4.	Find min date from all records.
+
+Task 2:: Add two more fields and Create one more table → linkedin_member_details
+1.	 first_name,, last_name and fill both the fields using the full_name column only.
+Hint: use split_part function
+2.	Create another table linkedin_member_details consisting of lid(same lid as in table
+Linkedin_data, DOB, company_name, sector, and current_status(boolean field).
+3.	Get all the data consisting of both tables i,e linkedin_data and linkedin_member_details.
+
+Note*: Need to add more fields as per your requirement in table ‘linkedin_member_details’.
+      =====================  Task 3:: ==================================
+1.	Create table ‘unique_emails’ consisting of columns email, email_right, email_left, email_domian, fullname, firstname, lastname, firstname_lc, lastname_lc, fullname_length.
+2.	Create firstname , lastname from column full name and email_right , email_lef, email_domiam from column email.
+3.	Create new column name_to_long datatype boolean where length of fullname is greater than 10 marked as true else false.
+
+TASK NO 4::
+1.	Create column with name ‘fname_start_with_a’’ → should contain all the full_name that start with letter ‘a’.
+2.	Create two columns with created_at, updated_at.
+•	Created_at should have manually inserted values.
+•	Updated_at should have a current timestamp.
+3.	FETCH all the records that are updated  in the last 24 hours or <> mins.
+4.	GET count of all records, group by created_at.
+5.	Create a column updated_email, where you need to check which email is started with letter ‘a’, ‘v’, ‘s’, ‘m’, and than try to replace the domain name from .com to ‘.co.in’ , and it should have updated_email_domain as well.
+6.	Try to add another column ‘DOB’, and try to get the records grouping by ‘dob’.’
+7.	See whose dob is min, check max email length.
+      
+
+TASK NO. 5
+1.	Create another table same as ‘unique_emails’ name it as unique_emails_staging  without specifying  the schema of the table.
+2.	Try switch case statements.( try atleast 3-5 examples)
+3.	Add one more column to unique_emails_staging , and use switch case
+To update the column by putting multiple cases like
+•	If length of email_left is >3 and <=5 , then update it a ‘small,
+•	If length of email_left is >5 and <=8 , then update it a medium,
+•	If length of email_left is >8 and <=12 , then update it a too large,
+
+TASK NO.6 ():
+Create table for linkedin users
+Take columns fname, lname, education  ( datatype json),  experience, education_end_date, experiance_start_date, experiance_end_date,
+currently_working with datatype boolean, all_education with datatype varchar.
+(Currently_working = TRUE when experiance_start_date is present and experiance_end_date is null
+ or not present otherwise consider false.)
+(Take columns fname, lname, education, education start date , education end date
+  Take education column value like [{degree: 12th, start_date : 2012, end_date: 2013},
+									{degree:Bcom, start_date:2013, end_date: 2016}])
+								emp_exp=	{position: manager, emp_start_date : 2012, emp_end_date:: 2013}
+(
+Take one another column exp_years and update it with difference of experience end- start date
+	(ex . exp_years = experience start date- experience end date ))
+All_education = merge all education degrees
+
+    =============================================================
+
+
+
+
+
+
+    
+
+
+
+
+#Task1
+CREATE TABLE linkedin_data 
+   (
+       lid INT PRIMARY KEY,            
+	   fullname VARCHAR(50),   
+	   contact_no VARCHAR(15),            
+	   education VARCHAR(50),             
+	   exp INT,                            
+	   designation VARCHAR(50),           
+	   job_st_dt DATE                      
+    );
+
+
+	insert into linkedin_data values(1,'Shivam Pandey',9977668855,'MCA',1,'Software Engineer','2024-12-02');
+	insert into linkedin_data values(2,'Rakesh Mishra',8839206778,'BCA',3,'Data Engineer','2021-07-10');
+	insert into linkedin_data values(3,'Lavkesh Patel',7877932855,'B.tech',8,'Data Analyst','2018-03-11');
+	insert into linkedin_data values(4,'akasa dubey',8077668821,'B.Com',12,'Java Developer','2012-12-18');
+	insert into linkedin_data values(5,'amita Shukla',9177668234,'M.Tech',5,'Python Engineer','2020-08-23');
+
+	
+	select * from linkedin_data;
+
+	select lid,max(exp) from linkedin_data group by lid order by max(exp) desc;
+
+	select lid,fullname from linkedin_data where fullname like 'a%' and fullname like '%a';
+
+	select min(job_st_dt) from linkedin_data;
+
+
+# Task2
+
+alter table linkedin_data add column first_name varchar(25), add column last_name varchar(25);
+
+select * from linkedin_data;
+
+update linkedin_data set first_name = split_part(fullname,' ',1), last_name = split_part(fullname,' ',2);
+
+
+CREATE TABLE linkedin_member_details (
+    lid INT PRIMARY KEY,                  
+    DOB DATE,                              
+    company_name VARCHAR(50),            
+    sector VARCHAR(50),                    
+    current_status BOOLEAN,                
+    FOREIGN KEY (lid) REFERENCES linkedin_data(lid) );
+	
+
+select * from linkedin_member_details;
+
+
+INSERT INTO linkedin_member_details (lid, DOB, company_name, sector, current_status)
+  VALUES
+       (1, '2021-05-14', 'ZecData', 'IT Technology', TRUE),
+       (2, '2023-03-22', 'VidyaGXP', 'Medicine', TRUE),
+       (3, '2017-11-09', 'Mango It', 'Marketing', FALSE);
+
+
+select linkedin_data.fullname, linkedin_data.contact_no, linkedin_data.designation,linkedin_member_details.sector from linkedin_data inner join linkedin_member_details on linkedin_data.lid = linkedin_member_details.lid;
+
+
+
+
+
+#Task3
+
+CREATE TABLE unique_emails (
+    email VARCHAR(30) PRIMARY KEY,                   
+    email_right VARCHAR(30),            
+    email_left VARCHAR(30),             
+    email_domain VARCHAR(30),           
+    fullname VARCHAR(30),               
+    firstname VARCHAR(30),              
+    lastname VARCHAR(30),               
+    firstname_lc VARCHAR(25),           
+    lastname_lc VARCHAR(25),            
+    fullname_length INT                 
+);
+
+
+alter table unique_emails add column name_to_long BOOLEAN;
+
+update unique_emails set email_right  = split_part(email,'@',1), email_left = split_part(email,'@',2);
+update unique_emails set email_domain = split_part(email_left,'.',2);
+update unique_emails set firstname = split_part(fullname,' ',1), lastname = split_part(fullname,' ',2);
+
+
+update  unique_emails set name_to_long = fullname_length > 10;
+update unique_emails set firstname_lc = lower(firstname),lastname_lc = lower(lastname),fullname_length = length(fullname);
+update unique_emails set name_to_long = length(fullname)> 10;
+insert into unique_emails (email,fullname)
+values
+(
+	'pandeyshivamps1998@gmail.com','Shivam Pandey'
+),
+('rajsoni@gmail.com','RAJ SONI');
+
+insert into unique_emails (email,fullname)
+values
+
+('rakeshmishra123@gmail.com','Rakesh Mishra');
+
+
+
+select * from unique_emails;
+
+
+
+
+
+#task4
+
+create table table_1 (fullname varchar(20));
+
+insert into table_1 (fullname) values('aman gautam'),('Shivam Shukla');
+
+
+SELECT 
+    fullname,
+    CASE
+        WHEN LEFT(fullname, 1) = 'A' OR LEFT(fullname, 1) = 'a' THEN fullname
+        
+    END AS fname_start_with_a
+FROM table_1;
+
+
+
+ALTER TABLE table_1
+ADD COLUMN created_at TIMESTAMP,
+ADD COLUMN updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+
+
+INSERT INTO table_1 (fullname, created_at)
+VALUES ('Vibhav Arora', '2024-12-05 11:50:00');
+
+select * from table_1;
+
+
+SELECT * 
+FROM table_1
+WHERE updated_at >= CURRENT_TIMESTAMP - INTERVAL '30 minutes';
+
+
+
+SELECT created_at, COUNT(*) AS record_count
+FROM table_1
+GROUP BY created_at
+ORDER BY created_at;
+
+
+
+
+ALTER TABLE table_1
+ADD COLUMN updated_email VARCHAR(50),
+ADD COLUMN updated_email_domain VARCHAR(50);
+
+alter table table_1 add column email varchar(50);
+
+select * from table_1;
+
+INSERT INTO table_1 (email)
+VALUES 
+    ('shivam@example.com'),
+    ('manan@xyz.com'),
+    ('videsh@example.com'),
+    ('gaurav@abc.com'),
+    ('aman@abc.com'),
+	('rakesh@gmail.com');
+
+
+
+
+UPDATE table_1
+SET 
+    updated_email = CASE
+        -- Check if the email starts with 'a', 'v', 's', or 'm' and ends with '.com'
+        WHEN LOWER(SUBSTRING(email FROM 1 FOR 1)) IN ('a', 'v', 's', 'm') AND email LIKE '%.com' THEN 
+            -- Replace '.com' with '.co.in' in the domain part
+            CONCAT(SUBSTRING(email FROM 1 FOR POSITION('@' IN email) - 1), '@', 
+                   REPLACE(SUBSTRING(email FROM POSITION('@' IN email) + 1), '.com', '.co.in'))
+        ELSE
+            -- Leave the email unchanged if conditions are not met
+            email
+    END,
+    updated_email_domain = CASE
+        WHEN LOWER(SUBSTRING(email FROM 1 FOR 1)) IN ('a', 'v', 's', 'm') AND email LIKE '%.com' THEN 
+            -- If the conditions are met, set the domain to '.co.in'
+            '.co.in'
+        ELSE
+            -- Otherwise, extract the original domain
+            SUBSTRING(email FROM POSITION('@' IN email) + 1)
+    END;
+
+
+
+select * from table_1;
+
+
+ALTER TABLE table_1
+ADD COLUMN DOB DATE;
+
+
+SELECT DOB, COUNT(*) AS record_count
+FROM table_1
+GROUP BY DOB
+ORDER BY DOB;
+
+insert into table_1 (DOB) 
+	values('2001-02-24'),('2001-02-22'),('1998-02-12'),('1995-10-19');
+
+insert into table_1 (DOB) values ('2001-02-24');
+
+
+SELECT 
+    (SELECT email FROM table_1 ORDER BY LENGTH(email) DESC LIMIT 1) AS max_email_length,
+    (SELECT DOB FROM table_1 ORDER BY DOB LIMIT 1) AS min_dob;
+	
+
+
+
+#Task5
+
+SELECT * INTO unique_emails_staging FROM unique_emails WHERE 1=0;
+
+select * from unique_emails_staging;
+
+
+SELECT email,
+       CASE
+           WHEN LEFT(email, 1) = 'r' THEN 'Starts with R'
+           WHEN LEFT(email, 1) = 'v' THEN 'Starts with V'
+           WHEN LEFT(email, 1) = 's' THEN 'Starts with S'
+           WHEN LEFT(email, 1) = 'm' THEN 'Starts with M'
+           ELSE 'Other'
+       END AS email_start_category
+FROM unique_emails;
+
+
+
+SELECT email,
+       CASE
+           WHEN LENGTH(email) < 5 THEN 'Short'
+           WHEN LENGTH(email) BETWEEN 5 AND 10 THEN 'Medium'
+           ELSE 'Long'
+       END AS email_length_category
+FROM unique_emails;
+
+
+
+ALTER TABLE unique_emails_staging
+ADD COLUMN email_size VARCHAR(20);
+
+UPDATE unique_emails_staging
+SET email_size = CASE
+    WHEN LENGTH(email_left) > 3 AND LENGTH(email_left) <= 5 THEN 'small'
+    WHEN LENGTH(email_left) > 5 AND LENGTH(email_left) <= 8 THEN 'medium'
+    WHEN LENGTH(email_left) > 8 AND LENGTH(email_left) <= 12 THEN 'too large'
+    ELSE 'other'  -- Optional, if you want to handle cases that don't fit any of the above conditions
+END;
+
+
+
+
+
+#Task6
+
+CREATE TABLE linkedin_users (
+    fname VARCHAR(20),
+    lname VARCHAR(20),
+    education JSON,                      
+    experience JSON,                     
+    education_start_date DATE,           
+    education_end_date DATE,             
+    experience_start_date DATE,          
+    experience_end_date DATE,            
+    currently_working BOOLEAN,           
+    all_education VARCHAR(255),          
+    exp_years INT                         
+);
+
+select * from linkedin_users;
+
+INSERT INTO linkedin_users (fname, lname, education, experience, education_start_date, education_end_date, experience_start_date, experience_end_date)
+VALUES 
+('Shivam', 'Pandey', 
+ '[{"degree": "12th", "start_date": "2012-01-01", "end_date": "2013-01-01"}, 
+   {"degree": "BCom", "start_date": "2013-01-01", "end_date": "2016-01-01"}]', 
+ '{"position": "Manager", "emp_start_date": "2012-01-01", "emp_end_date": "2013-01-01"}', 
+ '2012-01-01', '2013-01-01', '2012-01-01', NULL);
+
+
+UPDATE linkedin_users
+SET currently_working = CASE
+    WHEN experience_start_date IS NOT NULL AND experience_end_date IS NULL THEN TRUE
+    ELSE FALSE
+END;
+
+
+UPDATE linkedin_users
+SET exp_years = CASE
+    WHEN experience_end_date IS NOT NULL THEN
+        EXTRACT(YEAR FROM age(experience_start_date, experience_end_date))  -- Difference in years
+    WHEN experience_end_date IS NULL AND experience_start_date IS NOT NULL THEN
+        EXTRACT(YEAR FROM age(experience_start_date, CURRENT_DATE))  -- Difference from start date to today
+    ELSE 0  -- If no experience dates exist
+END;
+
+
+
+
+
+UPDATE linkedin_users
+SET all_education = (
+    SELECT string_agg(education_entry->>'degree', ', ')  
+	FROM jsonb_array_elements(education) AS education_entry
+);
+
+
+
+
+
+
+-- Change the education column to jsonb
+ALTER TABLE linkedin_users
+  ALTER COLUMN education TYPE jsonb USING education::jsonb;
+
+-- Now you can use jsonb_array_elements
+UPDATE linkedin_users
+SET all_education = (
+    SELECT string_agg(education_entry->>'degree', ', ')  -- Concatenate all degree values into one string
+    FROM jsonb_array_elements(education) AS education_entry
+);
+
+
+
+
+UPDATE linkedin_users
+SET all_education = (
+    SELECT string_agg(education_entry->>'degree', ', ')  -- Concatenate all degree values into one string
+    FROM jsonb_array_elements(education::jsonb) AS education_entry
+);
+
+
+UPDATE linkedin_users
+SET all_education = (
+    SELECT string_agg(education_entry->>'degree', ', ')  -- Concatenate all degree values into one string
+    FROM jsonb_array_elements(education::jsonb) AS education_entry
+);
+
+
+-- Change the education column to jsonb
+ALTER TABLE linkedin_users
+  ALTER COLUMN education TYPE jsonb USING education::jsonb;
